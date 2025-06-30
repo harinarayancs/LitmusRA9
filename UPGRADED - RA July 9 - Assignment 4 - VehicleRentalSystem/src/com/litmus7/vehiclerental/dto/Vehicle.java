@@ -8,6 +8,7 @@ public class Vehicle {
     protected String brand;
     protected String model;
     protected double rentalPricePerDay;
+    protected boolean isRented; // Indicates if the vehicle is rented
     
     /**
      * Default constructor.
@@ -30,5 +31,24 @@ public class Vehicle {
         System.out.println("Brand: " + brand);
         System.out.println("Model: " + model);
         System.out.println("Rental Price/Day: " + rentalPricePerDay);
+    }
+    //Getters 
+	public String getBrand() { 
+		return brand; 
+	}
+    public String getModel() { 
+    	return model; 
+    }
+    public double getRentalPricePerDay() { 
+    	return rentalPricePerDay; 
+    }
+    public boolean isRented() { 
+    	return isRented; 
+    }
+    public void rent() { 
+    	isRented = true; 
+    }
+    public void returnVehicle() { 
+    	isRented = false; 
     }
 }
