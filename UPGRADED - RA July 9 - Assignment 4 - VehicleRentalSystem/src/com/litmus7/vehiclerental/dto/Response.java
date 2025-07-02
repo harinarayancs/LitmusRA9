@@ -1,12 +1,22 @@
 package com.litmus7.vehiclerental.dto;
-import java.util.List;
 
-public class Response {
+
+public class Response<T> {
     private Integer statusCode;
     private String errorMessage;
-    private List<Vehicle> vehicles;
+    private T data;
 
-    // Getter and Setter for statusCode
+    // Constructors
+    public Response() {}
+
+    public Response(Integer statusCode, String errorMessage, T data) {
+        this.statusCode = statusCode;
+        this.errorMessage = errorMessage;
+        this.data = data;
+    }
+
+    // Getters and Setters
+
     public Integer getStatusCode() {
         return statusCode;
     }
@@ -15,7 +25,6 @@ public class Response {
         this.statusCode = statusCode;
     }
 
-    // Getter and Setter for errorMessage
     public String getErrorMessage() {
         return errorMessage;
     }
@@ -24,12 +33,11 @@ public class Response {
         this.errorMessage = errorMessage;
     }
 
-    // Getter and Setter for vehicles
-    public List<Vehicle> getVehicles() {
-        return vehicles;
+    public T getData() {
+        return data;
     }
 
-    public void setVehicles(List<Vehicle> vehicles) {
-        this.vehicles = vehicles;
+    public void setData(T data) {
+        this.data = data;
     }
 }

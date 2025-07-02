@@ -9,12 +9,14 @@ import com.litmus7.vehiclerental.dto.Vehicle;
 public class VehicleApp {
     public static void main(String[] args) {
         VehicleController controller = new VehicleController();
-        Response response = controller.loadVehiclesFromFile("vehicles.txt");
+        Response<List<Vehicle>> response = controller.loadVehiclesFromFile("vehicles.txt");
+
         if (response.getStatusCode() == 200) {
             System.out.println("Vehicles Loaded successfully!");
         } else {
-            System.out.println("Error loading Vehicles" + response.getErrorMessage());
+            System.out.println("Error loading Vehicles: " + response.getErrorMessage());
         }
+
         Scanner sc = new Scanner(System.in);
         boolean exit = false;
 
@@ -34,15 +36,21 @@ public class VehicleApp {
             switch (choice) {
                 case 1:
                     System.out.println("All Vehicles : ");
-                    List<Vehicle> allVehicles = controller.getAllVehicles();
-                    for (Vehicle v : allVehicles) {
+                    Response<List<Vehicle>> allResponse = new Response<>();
+                    Response<List<Vehicle>> allVehiclesResponse = controller.getAllVehicles();
+                    allResponse.setData(allVehiclesResponse.getData());
+                    for (Vehicle v : allResponse.getData()) {
                         v.displayDetails();
                     }
                     break;
 
                 case 2:
                     System.out.println("\nAvailable Vehicles:");
-                    List<Vehicle> availableVehicles = controller.getAvailableVehicles();
+                    Response<List<Vehicle>> availableVehiclesResponse = controller.getAvailableVehicles();
+                    Response<List<Vehicle>> availableResponse = new Response<>();
+                    availableResponse.setData(availableVehiclesResponse.getData());
+
+                    List<Vehicle> availableVehicles = availableResponse.getData();
                     if (availableVehicles.isEmpty()) {
                         System.out.println("No vehicles available.");
                     } else {
@@ -68,8 +76,10 @@ public class VehicleApp {
                         System.out.print("Is Automatic (true/false): ");
                         boolean isAuto = Boolean.parseBoolean(sc.nextLine());
 
-                        controller.addCar(brand, model, price, doors, isAuto);
-                        System.out.println("Car added successfully!");
+                        Response<String> carResponse = controller.addCar(brand, model, price, doors, isAuto);
+                        System.out.println(carResponse.getStatusCode() == 200 ?
+                                carResponse.getData() : "Error: " + carResponse.getErrorMessage());
+
                     } else if (type.equalsIgnoreCase("Bike")) {
                         System.out.print("Brand: ");
                         String brand = sc.nextLine();
@@ -82,8 +92,10 @@ public class VehicleApp {
                         System.out.print("Engine Capacity (cc): ");
                         int capacity = Integer.parseInt(sc.nextLine());
 
-                        controller.addBike(brand, model, price, hasGear, capacity);
-                        System.out.println("Bike added successfully!");
+                        Response<String> bikeResponse = controller.addBike(brand, model, price, hasGear, capacity);
+                        System.out.println(bikeResponse.getStatusCode() == 200 ?
+                                bikeResponse.getData() : "Error: " + bikeResponse.getErrorMessage());
+
                     } else {
                         System.out.println("Invalid Vehicle Type!!");
                     }
@@ -94,12 +106,9 @@ public class VehicleApp {
                     String brand = sc.nextLine();
                     System.out.print("Enter Model: ");
                     String model = sc.nextLine();
-                    Response rentResponse = controller.rentVehicle(brand, model);
-                    if (rentResponse.getStatusCode() == 200) {
-                        System.out.println("Vehicle rented successfully!");
-                    } else {
-                        System.out.println("Error renting vehicle: " + rentResponse.getErrorMessage());
-                    }
+                    Response<String> rentResponse = controller.rentVehicle(brand, model);
+                    System.out.println(rentResponse.getStatusCode() == 200 ?
+                            rentResponse.getData() : "Error: " + rentResponse.getErrorMessage());
                     break;
 
                 case 5:
@@ -107,17 +116,18 @@ public class VehicleApp {
                     String returnBrand = sc.nextLine();
                     System.out.print("Enter Model: ");
                     String returnModel = sc.nextLine();
-                    Response returnResponse = controller.returnVehicle(returnBrand, returnModel);
-                    if (returnResponse.getStatusCode() == 200) {
-                        System.out.println("Vehicle returned successfully!");
-                    } else {
-                        System.out.println("Error returning vehicle: " + returnResponse.getErrorMessage());
-                    }
+                    Response<String> returnResponse = controller.returnVehicle(returnBrand, returnModel);
+                    System.out.println(returnResponse.getStatusCode() == 200 ?
+                            returnResponse.getData() : "Error: " + returnResponse.getErrorMessage());
                     break;
 
                 case 6:
-                    double total = controller.calculateRevenue();
-                    System.out.println("Total Rental Price of Rented Vehicles : " + total);
+                    Response<Double> revenueResponse = controller.calculateRevenue();
+                    if (revenueResponse.getStatusCode() == 200) {
+                        System.out.println("Total Rental Price of Rented Vehicles : " + revenueResponse.getData());
+                    } else {
+                        System.out.println("Error calculating revenue: " + revenueResponse.getErrorMessage());
+                    }
                     break;
 
                 case 0:
